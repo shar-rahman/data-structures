@@ -18,10 +18,10 @@ int main()
 		Tree.insertNode(data);
 	
 	Tree.printInOrder();
-	Tree.printPostOrder();
-	Tree._searchNode(Tree.getRoot(), 11022);
-	Tree._searchNode(Tree.getRoot(), 1234123423);
 	Tree.isBalanced();
+	Tree.balanceTree();
+	cout << "===========" << endl;
+	Tree.printInOrder();
 
 
 	system("pause");

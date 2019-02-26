@@ -1,0 +1,42 @@
+﻿  Source.cpp
+c:\users\sharjeel\source\repos\project1\project1\binarytree.h(286): error C3867: 'TreeNode<dataType>::getParent': non-standard syntax; use '&' to create a pointer to member
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\binarytree.h(284): note: while compiling class template member function 'void BinaryTree<int>::rotateRight(TreeNode<dataType> *)'
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\binarytree.h(318): note: see reference to function template instantiation 'void BinaryTree<int>::rotateRight(TreeNode<dataType> *)' being compiled
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\binarytree.h(91): note: while compiling class template member function 'void BinaryTree<int>::insertNode(dataType)'
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\source.cpp(18): note: see reference to function template instantiation 'void BinaryTree<int>::insertNode(dataType)' being compiled
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\source.cpp(12): note: see reference to class template instantiation 'BinaryTree<int>' being compiled
+c:\users\sharjeel\source\repos\project1\project1\binarytree.h(271): error C3867: 'TreeNode<dataType>::getParent': non-standard syntax; use '&' to create a pointer to member
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\binarytree.h(269): note: while compiling class template member function 'void BinaryTree<int>::rotateLeft(TreeNode<dataType> *)'
+          with
+          [
+              dataType=int
+          ]
+  c:\users\sharjeel\source\repos\project1\project1\binarytree.h(312): note: see reference to function template instantiation 'void BinaryTree<int>::rotateLeft(TreeNode<dataType> *)' being compiled
+          with
+          [
+              dataType=int
+          ]
