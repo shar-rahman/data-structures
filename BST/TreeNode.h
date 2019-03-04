@@ -11,7 +11,7 @@ private:
 public:
 	//constructors
 	TreeNode(){ data = 0; leftPointer = 0; rightPointer = 0; }
-	TreeNode(dataType newItem) { setData(newItem); leftPointer = 0; rightPointer = 0; }
+	TreeNode(dataType newItem) { setData(newItem); leftPointer = NULL; rightPointer = NULL; parentNode = NULL; }
 	//setters
 	void setData(dataType newItem) { data = newItem; }
 	void setLeft(TreeNode<dataType>* left) { leftPointer = left; }

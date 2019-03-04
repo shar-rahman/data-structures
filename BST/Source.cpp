@@ -17,13 +17,7 @@ int main()
 	while (inFile >> data)
 		Tree.insertNode(data);
 	
-	Tree.printInOrder();
-	Tree.isBalanced();
-	Tree.balanceTree();
-	cout << "===========" << endl;
-	Tree.printInOrder();
-
-
+	Tree.printFromRoot();
 	system("pause");
 	return 0;
 }
