@@ -1,6 +1,9 @@
 #pragma once
 #include "TreeNode.h"
+#include <queue>
+#include <math.h>
 
+using namespace std;
 
 template <class dataType>
 class BinaryTree
@@ -26,47 +29,41 @@ public:
 	void printInOrder();
 	void printPostOrder(TreeNode<dataType>* node);
 	void printPostOrder();
-	void printFromRoot();
-	bool printLevel(TreeNode<dataType>* node, dataType key);
+	void printFromRoot(TreeNode<dataType>* node);
 	bool searchNode(TreeNode<dataType>* node, dataType key);
-	void _searchNode(TreeNode<dataType>* node, dataType key);
 	// balance functions
 	int getHeight(TreeNode<dataType>* node);
-	bool isBalanced();
-	void balanceTree(TreeNode<dataType>* node);
-	bool setChild(TreeNode<dataType>* parent, TreeNode<dataType>* check, TreeNode<dataType>* child);
-	bool replaceChild(TreeNode<dataType>* parent, TreeNode<dataType>* old, TreeNode<dataType>* nuChild);
+	bool isBalanced(TreeNode<dataType>* node);
 	void rotateRight(TreeNode<dataType>* node);
 	void rotateLeft(TreeNode<dataType>* node);
+	void balance(TreeNode<dataType>* node);
 };
 
 template <class dataType>
-void BinaryTree<dataType>::printFromRoot()
-{
-	if (root == NULL)
-		return;
-	int key = 1;
-	while (printLevel(this->getRoot(), key))
-	{
-		key++;
-		std::cout << std::endl;
-	}
-}
-
-template <class dataType>
-bool BinaryTree<dataType>::printLevel(TreeNode<dataType>* node, dataType key)
+void BinaryTree<dataType>::printFromRoot(TreeNode<dataType>* node)
 {
 	if (node == NULL)
-		return false;
-	if (key == 1)
+		return;
+	queue<TreeNode<dataType>*> TreeQueue;
+	TreeQueue.push(node);
+	while (true)
 	{
-		std::cout << node->getData() << " ";
-		return true;
+		int numberOfNodes = TreeQueue.size();
+		if (numberOfNodes == 0)
+			break;
+		while (numberOfNodes > 0)
+		{
+			TreeNode<dataType>* rover = TreeQueue.front();
+			std::cout << rover->getData() << " ";
+			TreeQueue.pop();
+			if (rover->getLeft() != NULL)
+				TreeQueue.push(rover->getLeft());
+			if (rover->getRight() != NULL)
+				TreeQueue.push(rover->getRight());
+			numberOfNodes--;
+		}
+		std::cout << std::endl;
 	}
-
-	bool left = printLevel(node->getLeft(), key - 1);
-	bool right = printLevel(node->getRight(), key - 1);
-	return left || right;
 }
 
 template <class dataType>
@@ -88,7 +85,6 @@ void BinaryTree<dataType>::insertNode(TreeNode<dataType>* newNode)
 				{
 					rover->setRight(newNode);
 					newNode->setParent(rover);
-					std::cout << ">> Set Right >>" << std::endl;
 					exitCond = false;
 					break;
 				}
@@ -100,7 +96,6 @@ void BinaryTree<dataType>::insertNode(TreeNode<dataType>* newNode)
 				{
 					rover->setLeft(newNode);
 					newNode->setParent(rover);
-					std::cout << "<< Set Left <<" << std::endl;
 					exitCond = false;
 					break;
 				}
@@ -128,7 +123,6 @@ void BinaryTree<dataType>::insertNode(dataType newData)
 	if (this->getRoot() == 0)
 	{
 		root = newNode;
-		std::cout << "Inserting root: " << root->getData() << "\n";
 	}
 	else {
 		bool exitCond = true;
@@ -139,7 +133,7 @@ void BinaryTree<dataType>::insertNode(dataType newData)
 				if (rover->getRight() == 0)
 				{
 					rover->setRight(newNode);
-					std::cout << ">> Set Right: " << rover->getData() << " >>" << std::endl;
+					newNode->setParent(rover);
 					exitCond = false;
 					break;
 				}
@@ -150,7 +144,7 @@ void BinaryTree<dataType>::insertNode(dataType newData)
 				if (rover->getLeft() == 0)
 				{
 					rover->setLeft(newNode);
-					std::cout << "<< Set Left: " << rover->getData() << " <<" << std::endl;
+					newNode->setParent(rover);
 					exitCond = false;
 					break;
 				}
@@ -162,7 +156,6 @@ void BinaryTree<dataType>::insertNode(dataType newData)
 				exitCond = false;
 			}
 		}
-		newNode->setParent(rover);
 		newNode->setLeft(0);
 		newNode->setRight(0);
 	}
@@ -225,39 +218,6 @@ bool BinaryTree<dataType>::searchNode(TreeNode<dataType>* node, dataType key)
 	return 0;
 }
 
-template <class dataType>
-bool BinaryTree<dataType>::setChild(TreeNode<dataType>* parent, TreeNode<dataType>* check, TreeNode<dataType>* child)
-{
-	if (check != parent->getLeft() || check != parent->getRight())
-		return false;
-	if (check == parent->getLeft())
-		parent->setLeft(child);
-	else
-		parent->setRight(child);
-	if (child != NULL)
-		child->setParent(parent);
-	return true;
-}
-
-template <class dataType>
-bool BinaryTree<dataType>::replaceChild(TreeNode<dataType>* parent, TreeNode<dataType>* old, TreeNode<dataType>* nuChild)
-{
-	if (parent->getLeft() == old)
-		return setChild(parent, parent->getLeft(), nuChild);
-	else if (parent->getRight() == old)
-		return setChild(parent, parent->getRight(), nuChild);
-	return false;
-}
-
-template <class dataType>
-void BinaryTree<dataType>::_searchNode(TreeNode<dataType>* node, dataType key)
-{
-	std::cout << "Searching for: " << key << std::endl;
-	if (searchNode(node, key))
-		std::cout << "Found node!" << std::endl;
-	else
-		std::cout << "Node not found!" << std::endl;
- }
 
 template <class dataType>
 int BinaryTree<dataType>::getHeight(TreeNode<dataType>* node)
@@ -275,91 +235,79 @@ int BinaryTree<dataType>::getHeight(TreeNode<dataType>* node)
 }
 
 template <class dataType>
-bool BinaryTree<dataType>::isBalanced()
+bool BinaryTree<dataType>::isBalanced(TreeNode<dataType>* node)
 {
-	std::cout << "\nChecking if tree is balanced." << std::endl;
-	int rightHeight = getHeight(this->root->getRight());
-	int leftHeight = getHeight(this->root->getLeft());
-	int height = getHeight(this->getRoot());
-	std::cout << "Tree Height: " << height << std::endl;
-	std::cout << "Left Height: " << leftHeight << std::endl;
-	std::cout << "Right Height: " << rightHeight << std::endl;
-	if (leftHeight > rightHeight || rightHeight > leftHeight)
-	{
-		std::cout << "Tree not balanced.\n" << std::endl;
+	int rightHeight = getHeight(node->getRight());
+	int leftHeight = getHeight(node->getLeft());
+	int difference = abs(leftHeight - rightHeight);
+	if (root == NULL)
 		return false;
-	}
-	else
-	{
-		std::cout << "Tree is balanced.\n" << std::endl;
-		return true;
-	}
+	if (difference > 1)
+		return false;
+	return true;
 }
 
 template <class dataType>
 void BinaryTree<dataType>::rotateLeft(TreeNode<dataType>* node)
 {
-	TreeNode<dataType>* rover = node->getRight()->getLeft();
-	if (node->getParent() != NULL)
-		replaceChild(node->getParent(), node, node->getRight());
+	if (node == this->getRoot())
+	{
+		this->root = node->getRight();
+		node->getRight()->setParent(NULL);
+		node->getRight()->setLeft(node);
+		node->setParent(node->getRight());
+		node->setRight(NULL);
+	}
 	else
 	{
-		this->setRoot(node->getRight());
-		this->root->setParent(NULL);
+		node->getRight()->setParent(node->getParent());
+		node->getParent()->setRight(node->getRight());
+		node->getRight()->setLeft(node);
+		node->setParent(node->getRight());
+		node->setRight(NULL);
 	}
-	setChild(node->getRight(), node->getLeft(), node);
-	setChild(node, node->getRight(), rover);
 }
 
 template <class dataType>
 void BinaryTree<dataType>::rotateRight(TreeNode<dataType>* node)
 {
-	TreeNode<dataType>* rover = node->getLeft()->getRight();
-	if (node->getParent() != NULL)
-		replaceChild(node->getParent(), node, node->getLeft());
+	if (node == this->getRoot())
+	{
+		this->root = node->getLeft();
+		node->getLeft()->setParent(NULL);
+		node->getLeft()->setRight(node);
+		node->setParent(node->getLeft());
+		node->setLeft(NULL);
+	}
 	else
 	{
-		this->setRoot(node->getLeft());
-		this->root->setParent(NULL);
+		node->getLeft()->setParent(node->getParent());
+		node->getParent()->setLeft(node->getLeft());
+		node->getLeft()->setRight(node);
+		node->setParent(node->getLeft());
+		node->setLeft(NULL);
 	}
-	setChild(node->getLeft(), node->getRight(), node);
-	setChild(node, node->getLeft(), rover);
-}
-template <class dataType>
-void BinaryTree<dataType>::balanceTree(TreeNode<dataType>* node)
-{
-	TreeNode<dataType>* rover = node;
-	int rightHeight = getHeight(rover->getRight());
-	int leftHeight = getHeight(rover->getLeft());
-	if (rightHeight == leftHeight)
-		return;
-	else
-	{
-		if (rightHeight > leftHeight)
-		{
-			std::cout << " hi ";
-			int balance = (rightHeight - leftHeight) / 2;
-			for (int i = 0; i < balance; i++)
-			{
-				rotateLeft(rover);
-				rover = rover->getLeft();
-			}
-		}
-		else
-		{
-			std::cout << " hi ";
-			int balance = (leftHeight - rightHeight) / 2;
-			for (int i = 0; i < balance; i++)
-			{
-				std::cout << " hi ";
-				rotateRight(rover);
-				rover = rover->getRight();
-			}
-		}
-	}
-	if (rover->getRight() != NULL)
-		this->balanceTree(rover->getRight());
-	if (rover->getLeft() != NULL)
-		this->balanceTree(rover->getLeft());
 }
 
+template <class dataType>
+void BinaryTree<dataType>::balance(TreeNode<dataType>*node)
+{
+	if (node == NULL)
+		return;
+	while (this->isBalanced(node) == false)
+	{
+		int leftHeight = this->getHeight(node->getLeft());
+		int rightHeight = this->getHeight(node->getRight());
+		if (leftHeight > rightHeight && leftHeight - rightHeight > 1)
+		{
+			this->rotateRight(node);
+		}
+		else if (leftHeight < rightHeight && rightHeight - leftHeight > 1)
+		{
+			this->rotateLeft(node);
+		}
+		node = node->getParent();
+	}
+	this->balance(node->getLeft());
+	this->balance(node->getRight());
+}

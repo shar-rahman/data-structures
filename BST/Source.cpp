@@ -13,11 +13,16 @@ int main()
 	ifstream inFile;
 	
 	inFile.open("Numbers.txt");
-
+	cout << "Creating degenerate tree: " << endl;
 	while (inFile >> data)
 		Tree.insertNode(data);
 	
-	Tree.printFromRoot();
+	cout << "Tree Before balancing: " << endl;
+	Tree.printFromRoot(Tree.getRoot());
+	cout << "==========" << endl;
+	cout << "Tree After balancing: " << endl;
+	Tree.balance(Tree.getRoot());
+	Tree.printFromRoot(Tree.getRoot());
 	system("pause");
 	return 0;
 }
